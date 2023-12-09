@@ -1,5 +1,4 @@
 import mongoose from 'mongoose';
-import faker from 'faker';
 
 mongoose.Promise = global.Promise;
 
@@ -22,7 +21,7 @@ export function createBook(req, res) {
             publishDate: req.body.year,
             currentEdition: req.body.currentEdition
         });
- 
+
     book.save()
         .then(data => {
             res.send({
@@ -31,9 +30,16 @@ export function createBook(req, res) {
             });
         })
         .catch(err => {
-            res.status(500).send({
-                message: err.message
-            });
+            if (err.code === 11000) {
+                res.status(400).send({
+                    message: `'` + book.title + `' already exists in your personal library!`
+                });
+            }
+            else {
+                res.status(500).send({
+                    message: `Something went wrong when adding ` + book.title + `to your personal library. Error: ` + err.message
+                });
+            }
         });
 }
 
@@ -66,17 +72,17 @@ export function getBookById(req, res) {
     const bookId = req.body.id;
 
     Book.findById(bookId)
-    .then(data => {
-        res.send({
-            message: `Book with the ID:${bookId} was found`,
-            bookData: data 
+        .then(data => {
+            res.send({
+                message: `Book with the ID:${bookId} was found`,
+                bookData: data
+            });
+        })
+        .catch(err => {
+            res.status(500).send({
+                message: `Could not find BookID:${bookId}`
+            });
         });
-    })
-    .catch(err => {
-        res.status(500).send({
-            message: `Could not find BookID:${bookId}`
-        });
-    });
 }
 
 export function getBookByName(req, res) {

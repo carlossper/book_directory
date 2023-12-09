@@ -23,10 +23,6 @@ catch (err)
 import routes from './routes/book.js';
 routes(app);
 
-// app.get(`/`, (req, res) => {
-//     res.send(`Book directory`);
-// });
-
 app.listen(PORT, () => {
     console.log(`Server on ${PORT}`);
 });
